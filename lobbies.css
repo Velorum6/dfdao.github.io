@@ -224,3 +224,12 @@
             padding: 100px;
             border: 1px solid rgba(255, 255, 255);
         }
+        
+        .arena {
+            color: rgb(233, 230, 76);
+        }
+        
+        .lobby-time {
+            padding-top: 16px;
+            font-size: 12px;
+        }

@@ -32,13 +32,42 @@ export async function lobbiesCreated() {
 
     const rpcEndpoint = "https://rpc.xdaichain.com/";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
+    const arenasContract = new ethers.Contract("0x688c78df6b8b64be16a7702df10ad64100079a68", DarkForestABI, provider);
     const contract = new ethers.Contract("0x5da117b8ab8b739346f5edc166789e5afb1a7145", DarkForestABI, provider);
-    let lobbies = []
-    let eventsFilter = await contract.filters.LobbyCreated();
-    let events = await contract.queryFilter(eventsFilter);
-    console.log(events[0])
+
+    let arenas = [];
+
+    let ArenaEventsFilter = await arenasContract.filters.LobbyCreated();
+    let arenaEvents = await arenasContract.queryFilter(ArenaEventsFilter);
+
+    let defaultEventsFilter = await contract.filters.LobbyCreated();
+    let defaultEvents = await contract.queryFilter(defaultEventsFilter);
+
+    let events = arenaEvents.concat(defaultEvents);
+    let arenaCounter = 1;
+    let defaultCounter = 1;
     events.forEach((i) => {
-        lobbies.push({ "id": events.indexOf(i) + 2, "name": `game ${events.indexOf(i)} `, "address": i.args.lobbyAddress, "owner": i.args.ownerAddress })
+        if (i.address.toLowerCase() === "0x688c78df6b8b64be16a7702df10ad64100079a68") {
+            arenas.push({ "og": i.address, "id": events.indexOf(i) + 2, "name": `arena ${arenaCounter} `, "address": i.args.lobbyAddress, "blocknumber": i.blockNumber, "owner": i.args.ownerAddress })
+            arenaCounter++;
+        } else {
+            arenas.push({ "og": i.address, "id": events.indexOf(i) + 2, "name": `game ${defaultCounter} `, "address": i.args.lobbyAddress, "blocknumber": i.blockNumber, "owner": i.args.ownerAddress })
+            defaultCounter++;
+        }
     })
-    return lobbies
+    return arenas
+}
+
+export async function getTimestamp(blocknumber) {
+
+    const rpcEndpoint = "https://rpc.xdaichain.com/";
+    const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
+
+    const timestamp = await provider.getBlock(blocknumber);
+    let date = new Date(timestamp.timestamp * 1000);
+
+    const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    let stringdate = date.getDate() + " " + month[date.getMonth()] + " " + date.getFullYear() + " " + date.getHours() + "h " + date.getMinutes() + "m " + date.getSeconds() + "s";
+    return stringdate;
 }

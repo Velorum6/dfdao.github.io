@@ -1,4 +1,4 @@
-import { lobbyScoreBoard, lobbiesCreated } from "./scoreboard.js"
+import { lobbyScoreBoard, lobbiesCreated, getTimestamp } from "./scoreboard.js"
 
 let users = [];
 let users_details = [];
@@ -25,12 +25,14 @@ function numberWithCommas(x) {
 
 readTextFile("./lobbies.json", async function(json) {
     var data = JSON.parse(json);
-    let xyz = await lobbiesCreated()
-
-    for (var i = 0; i < xyz.length; i++) {
-        data.push(xyz[i])
+    let lobbies = await lobbiesCreated()
+    for (var i = 0; i < lobbies.length; i++) {
+        data.push(lobbies[i])
     }
 
+    data.sort(function(a, b) {
+        return a.blocknumber - b.blocknumber;
+    });
 
     users = data.map(user => {
         const card = userCardTemplate.content.cloneNode(true).children[0];
@@ -40,6 +42,10 @@ readTextFile("./lobbies.json", async function(json) {
         card.querySelector(".card-spectate").href = `https://wonderful-druid-5c3a7e.netlify.app/play/${user.address}`;
         card.querySelector(".card-owner").textContent = `Owner: ${user.owner}`;
         card.querySelector(".card-details").id = user.id;
+
+        if (user.og === "0x688C78Df6B8B64Be16a7702df10Ad64100079A68") {
+            card.querySelector(".card-name").classList.add("arena")
+        }
         document.querySelector(".cards").append(card);
         return {
             id: user.id,
@@ -61,6 +67,7 @@ readTextFile("./lobbies.json", async function(json) {
             id: user_detail.id,
             name: user_detail.name,
             address: user_detail.address,
+            blocknumber: user_detail.blocknumber,
             element: detailing
         }
 
@@ -109,11 +116,9 @@ readTextFile("./lobbies.json", async function(json) {
             const value = x.id
             users_details.forEach(async a => {
                 if (a.id == value) {
-                    console.log(a.element.querySelector('.lobby-name'))
-
                     a.element.querySelector(".lobby-tbody").innerHTML = `<tr><td>Loading...</td><td>Loading...</td><td>Loading...<td><tr>`
                     buildTable(await lobbyScoreBoard(a.address), a.element.querySelector('.lobby-tbody'));
-
+                    a.element.querySelector(".lobby-time").textContent = await getTimestamp(a.blocknumber)
                 }
             })
         }, { once: true });
