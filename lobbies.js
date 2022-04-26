@@ -1,4 +1,4 @@
-import { lobbyScoreBoard, lobbiesCreated, getTimestamp } from "./scoreboard.js"
+import { lobbyScoreBoard, lobbiesCreated, getTimestamp, recursion } from "./scoreboard.js"
 
 let users = [];
 let users_details = [];
@@ -26,6 +26,9 @@ function numberWithCommas(x) {
 readTextFile("./lobbies.json", async function(json) {
     var data = JSON.parse(json);
     let lobbies = await lobbiesCreated()
+
+    let esz = await recursion("0x5da117b8ab8b739346f5edc166789e5afb1a7145", [])
+    console.log(esz)
     for (var i = 0; i < lobbies.length; i++) {
         data.push(lobbies[i])
     }
@@ -45,6 +48,8 @@ readTextFile("./lobbies.json", async function(json) {
 
         if (user.og === "0x688C78Df6B8B64Be16a7702df10Ad64100079A68") {
             card.querySelector(".card-name").classList.add("arena")
+            card.querySelector(".card-join").href = `https://arena.dfdao.xyz/play/${user.address}`;
+            card.querySelector(".card-spectate").href = `https://arena.dfdao.xyz/play/${user.address}`;
         }
         document.querySelector(".cards").append(card);
         return {
