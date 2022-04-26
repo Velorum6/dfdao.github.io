@@ -3,9 +3,18 @@ import DarkForestABI from './abi.js';
 
 export async function lobbyScoreBoard(address) {
 
+    //  ______     ______     ______     ______     ______     ______     ______     ______     ______     _____    
+    // /\  ___\   /\  ___\   /\  __ \   /\  == \   /\  ___\   /\  == \   /\  __ \   /\  __ \   /\  == \   /\  __-.  
+    // \ \___  \  \ \ \____  \ \ \/\ \  \ \  __<   \ \  __\   \ \  __<   \ \ \/\ \  \ \  __ \  \ \  __<   \ \ \/\ \ 
+    //  \/\_____\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_____\  \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\  \ \____- 
+    //   \/_____/   \/_____/   \/_____/   \/_/ /_/   \/_____/   \/_____/   \/_____/   \/_/\/_/   \/_/ /_/   \/____/ 
+
+    // Thanks to Harryhare from the darkforest discord who made this function and I copypasted from his plugin heheh <3
+
+    // Function that returns the scoreboard from a specified lobby
 
     const lobbyAddress = address
-    const rpcEndpoint = "https://rpc.xdaichain.com/";
+    const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
     const darkforest = new ethers.Contract(lobbyAddress, DarkForestABI, provider);
 
@@ -28,7 +37,6 @@ export async function lobbyScoreBoard(address) {
 }
 
 export async function lobbiesCreated() {
-
 
     const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
@@ -61,6 +69,14 @@ export async function lobbiesCreated() {
 
 export async function getTimestamp(blocknumber) {
 
+    //  ______   __     __    __     ______     ______     ______   ______     __    __     ______  
+    // /\__  _\ /\ \   /\ "-./  \   /\  ___\   /\  ___\   /\__  _\ /\  __ \   /\ "-./  \   /\  == \ 
+    // \/_/\ \/ \ \ \  \ \ \-./\ \  \ \  __\   \ \___  \  \/_/\ \/ \ \  __ \  \ \ \-./\ \  \ \  _-/ 
+    //    \ \_\  \ \_\  \ \_\ \ \_\  \ \_____\  \/\_____\    \ \_\  \ \_\ \_\  \ \_\ \ \_\  \ \_\   
+    //     \/_/   \/_/   \/_/  \/_/   \/_____/   \/_____/     \/_/   \/_/\/_/   \/_/  \/_/   \/_/  
+
+    // Function that returns a string with the time that the blocknumber that you gave as a parameter was
+
     const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
 
@@ -73,35 +89,59 @@ export async function getTimestamp(blocknumber) {
     return stringdate;
 }
 
-export async function recursion(param1, param2) {
-    //  ______     ______     ______     __  __     ______     ______     __     ______     __   __    
-    // /\  == \   /\  ___\   /\  ___\   /\ \/\ \   /\  == \   /\  ___\   /\ \   /\  __ \   /\ "-.\ \   
-    // \ \  __<   \ \  __\   \ \ \____  \ \ \_\ \  \ \  __<   \ \___  \  \ \ \  \ \ \/\ \  \ \ \-.  \  
-    //  \ \_\ \_\  \ \_____\  \ \_____\  \ \_____\  \ \_\ \_\  \/\_____\  \ \_\  \ \_____\  \ \_\\"\_\ 
-    //   \/_/ /_/   \/_____/   \/_____/   \/_____/   \/_/ /_/   \/_____/   \/_/   \/_____/   \/_/ \/_/
+
+export async function iteration(address) {
+
+    //  __     ______   ______     ______     ______     ______   __     ______     __   __    
+    // /\ \   /\__  _\ /\  ___\   /\  == \   /\  __ \   /\__  _\ /\ \   /\  __ \   /\ "-.\ \   
+    // \ \ \  \/_/\ \/ \ \  __\   \ \  __<   \ \  __ \  \/_/\ \/ \ \ \  \ \ \/\ \  \ \ \-.  \  
+    //  \ \_\    \ \_\  \ \_____\  \ \_\ \_\  \ \_\ \_\    \ \_\  \ \_\  \ \_____\  \ \_\\"\_\ 
+    //   \/_/     \/_/   \/_____/   \/_/ /_/   \/_/\/_/     \/_/   \/_/   \/_____/   \/_/ \/_/
+
+    // Thanks to Janikks / Berthold from the dfdao discord for helping with this function
+
+    // Function that returns all the descendants lobbies of a specified lobby, useful for tracking all the lobbies made with the same diamond pattern.
 
     const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
-    const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
-    const contract = new ethers.Contract(param1, DarkForestABI, provider);
 
-    let lobbies = param2
-    let defaultEventsFilter = await contract.filters.LobbyCreated();
-    let defaultEvents = await contract.queryFilter(defaultEventsFilter);
+    const lobbies = []
+    const remainingAddresses = [address]
 
-    await defaultEvents.forEach(async(i) => {
+    while (remainingAddresses.length > 0) {
+        const address = remainingAddresses.pop()
 
-        lobbies.push(i)
-        let LobbyContract = new ethers.Contract(i.args.lobbyAddress, DarkForestABI, provider);
-        let lobbyEvent = await LobbyContract.filters.LobbyCreated();
-        let allLobbyEventsFromThisContract = await LobbyContract.queryFilter(lobbyEvent);
+        // check current address
+        const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
+        const contract = new ethers.Contract(address, DarkForestABI, provider);
+        const eventsFilter = await contract.filters.LobbyCreated();
+        const events = await contract.queryFilter(eventsFilter);
 
-        if (allLobbyEventsFromThisContract.length === 0) {
-            console.log(`This contract doesn't has any sons - ${lobbies.length}`)
-        } else {
-            console.log(`This contract has sons - ${lobbies.length}`)
-            await recursion(i.args.lobbyAddress, lobbies)
-        }
-    })
+        // add all events (as address) of current address
+        lobbies.push(...events)
 
-    return lobbies
+        // check each event address for children
+        const childrenLobbies = (await Promise.all(events.map(async e => {
+            const LobbyContract = new ethers.Contract(e.args.lobbyAddress, DarkForestABI, provider);
+            const lobbyEvent = await LobbyContract.filters.LobbyCreated();
+            const allLobbyEventsFromThisContract = await LobbyContract.queryFilter(lobbyEvent);
+
+            if (allLobbyEventsFromThisContract.length === 0) {
+                console.log(`This contract doesn't have any children - contract number ${lobbies.indexOf(e)}`)
+                return null;
+            }
+
+            console.log(`This contract has children - contract number ${lobbies.indexOf(e)}`)
+            console.log(allLobbyEventsFromThisContract)
+            return e.args.lobbyAddress
+        }))).filter(Boolean)
+        remainingAddresses.push(...childrenLobbies)
+    }
+
+    let gameCounter = 1;
+    let games = []
+    for (let i = 0; i < lobbies.length; i++) {
+        games.push({ "og": lobbies[i].address, "id": i + 2, "name": `game ${gameCounter} `, "address": lobbies[i].args.lobbyAddress, "blocknumber": lobbies[i].blockNumber, "owner": lobbies[i].args.ownerAddress })
+        gameCounter++;
+    }
+    return games
 }

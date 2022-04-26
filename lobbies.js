@@ -1,4 +1,4 @@
-import { lobbyScoreBoard, lobbiesCreated, getTimestamp, recursion } from "./scoreboard.js"
+import { lobbyScoreBoard, lobbiesCreated, getTimestamp, iteration } from "./scoreboard.js"
 
 let users = [];
 let users_details = [];
@@ -25,10 +25,10 @@ function numberWithCommas(x) {
 
 readTextFile("./lobbies.json", async function(json) {
     var data = JSON.parse(json);
-    let lobbies = await lobbiesCreated()
+    // let lobbies = await lobbiesCreated()
 
-    let esz = await recursion("0x5da117b8ab8b739346f5edc166789e5afb1a7145", [])
-    console.log(esz)
+    let lobbies = await iteration("0x5da117b8ab8b739346f5edc166789e5afb1a7145")
+    console.log(lobbies)
     for (var i = 0; i < lobbies.length; i++) {
         data.push(lobbies[i])
     }
