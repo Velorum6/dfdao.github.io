@@ -27,7 +27,7 @@ readTextFile("./lobbies.json", async function(json) {
     var data = JSON.parse(json);
     // let lobbies = await lobbiesCreated()
 
-    let lobbies = await iteration("0x5da117b8ab8b739346f5edc166789e5afb1a7145")
+    let lobbies = await iteration("0x9eed3460ce72254f9f0ad5164c12f39e5e10a40c")
     console.log(lobbies)
     for (var i = 0; i < lobbies.length; i++) {
         data.push(lobbies[i])
@@ -41,16 +41,11 @@ readTextFile("./lobbies.json", async function(json) {
         const card = userCardTemplate.content.cloneNode(true).children[0];
         card.querySelector(".card-name").textContent = user.name;
         card.querySelector(".card-address").textContent = `Lobby: ${user.address}`;
-        card.querySelector(".card-join").href = `https://zkga.me/play/${user.address}`;
-        card.querySelector(".card-spectate").href = `https://wonderful-druid-5c3a7e.netlify.app/play/${user.address}`;
         card.querySelector(".card-owner").textContent = `Owner: ${user.owner}`;
         card.querySelector(".card-details").id = user.id;
-
-        if (user.og === "0x688C78Df6B8B64Be16a7702df10Ad64100079A68") {
-            card.querySelector(".card-name").classList.add("arena")
-            card.querySelector(".card-join").href = `https://arena.dfdao.xyz/play/${user.address}`;
-            card.querySelector(".card-spectate").href = `https://arena.dfdao.xyz/play/${user.address}`;
-        }
+        card.querySelector(".card-name").classList.add("arena")
+        card.querySelector(".card-join").href = `https://arena.dfdao.xyz/play/${user.address}`;
+        card.querySelector(".card-spectate").href = `https://arena.dfdao.xyz/play/${user.address}`;
         document.querySelector(".cards").append(card);
         return {
             id: user.id,

@@ -14,7 +14,7 @@ export async function lobbyScoreBoard(address) {
     // Function that returns the scoreboard from a specified lobby
 
     const lobbyAddress = address
-    const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
+    const rpcEndpoint = "https://optimism.gnosischain.com/";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
     const darkforest = new ethers.Contract(lobbyAddress, DarkForestABI, provider);
 
@@ -38,7 +38,7 @@ export async function lobbyScoreBoard(address) {
 
 export async function lobbiesCreated() {
 
-    const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
+    const rpcEndpoint = "https://optimism.gnosischain.com/";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
     const arenasContract = new ethers.Contract("0x688c78df6b8b64be16a7702df10ad64100079a68", DarkForestABI, provider);
     const contract = new ethers.Contract("0x5da117b8ab8b739346f5edc166789e5afb1a7145", DarkForestABI, provider);
@@ -77,7 +77,7 @@ export async function getTimestamp(blocknumber) {
 
     // Function that returns a string with the time that the blocknumber that you gave as a parameter was
 
-    const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
+    const rpcEndpoint = "https://optimism.gnosischain.com/";
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
 
     const timestamp = await provider.getBlock(blocknumber);
@@ -102,7 +102,7 @@ export async function iteration(address) {
 
     // Function that returns all the descendants lobbies of a specified lobby, useful for tracking all the lobbies made with the same diamond pattern.
 
-    const rpcEndpoint = "https://xdai-rpc.gateway.pokt.network";
+    const rpcEndpoint = "https://optimism.gnosischain.com/";
 
     const lobbies = []
     const remainingAddresses = [address]
@@ -140,7 +140,7 @@ export async function iteration(address) {
     let gameCounter = 1;
     let games = []
     for (let i = 0; i < lobbies.length; i++) {
-        games.push({ "og": lobbies[i].address, "id": i + 2, "name": `game ${gameCounter} `, "address": lobbies[i].args.lobbyAddress, "blocknumber": lobbies[i].blockNumber, "owner": lobbies[i].args.ownerAddress })
+        games.push({ "og": lobbies[i].address, "id": i + 2, "name": `arena ${gameCounter} `, "address": lobbies[i].args.lobbyAddress, "blocknumber": lobbies[i].blockNumber, "owner": lobbies[i].args.ownerAddress })
         gameCounter++;
     }
     return games
