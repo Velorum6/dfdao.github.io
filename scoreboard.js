@@ -1,6 +1,5 @@
 import { ethers } from 'https://cdn.skypack.dev/ethers';
 import DarkForestABI from './abi.js';
-
 export async function lobbyScoreBoard(address) {
 
     //  ______     ______     ______     ______     ______     ______     ______     ______     ______     _____    
@@ -28,7 +27,7 @@ export async function lobbyScoreBoard(address) {
             a.push({ "address": `${count[i].player}`, "score": count[i].score.toNumber() })
         }
 
-        a.sort(function(a, b) {
+        a.sort(function (a, b) {
             return b.score - a.score
         });
         return a
@@ -38,31 +37,27 @@ export async function lobbyScoreBoard(address) {
 
 export async function lobbiesCreated() {
 
-    const rpcEndpoint = "https://optimism.gnosischain.com/";
-    const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint);
-    const arenasContract = new ethers.Contract("0x688c78df6b8b64be16a7702df10ad64100079a68", DarkForestABI, provider);
-    const contract = new ethers.Contract("0x5da117b8ab8b739346f5edc166789e5afb1a7145", DarkForestABI, provider);
+    var response = await fetch('https://graph-optimism.gnosischain.com/subgraphs/name/arena/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query: `	{
+                arenas(first:1000){
+                ownerAddress
+                lobbyAddress
+            winners {
+              address
+            }}}`
+        }),
+    })
+    var res = await response.json()
 
-    let arenas = [];
+    var arenas = []
+    var arenaCounter = 1
 
-    let ArenaEventsFilter = await arenasContract.filters.LobbyCreated();
-    let arenaEvents = await arenasContract.queryFilter(ArenaEventsFilter);
-
-    let defaultEventsFilter = await contract.filters.LobbyCreated();
-    let defaultEvents = await contract.queryFilter(defaultEventsFilter);
-
-    let events = arenaEvents.concat(defaultEvents);
-    let arenaCounter = 1;
-    let defaultCounter = 1;
-
-    events.forEach((i) => {
-        if (i.address.toLowerCase() === "0x688c78df6b8b64be16a7702df10ad64100079a68") {
-            arenas.push({ "og": i.address, "id": events.indexOf(i) + 2, "name": `arena ${arenaCounter} `, "address": i.args.lobbyAddress, "blocknumber": i.blockNumber, "owner": i.args.ownerAddress })
-            arenaCounter++;
-        } else {
-            arenas.push({ "og": i.address, "id": events.indexOf(i) + 2, "name": `game ${defaultCounter} `, "address": i.args.lobbyAddress, "blocknumber": i.blockNumber, "owner": i.args.ownerAddress })
-            defaultCounter++;
-        }
+    res.data.arenas.forEach((i) => {
+        arenas.push({ "og": i.address, "id": res.data.arenas.indexOf(i) + 2, "name": `arena ${arenaCounter} `, "address": i.lobbyAddress, "blocknumber": i.blockNumber, "owner": i.ownerAddress })
+        arenaCounter++;
     })
     return arenas
 }

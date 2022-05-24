@@ -6,7 +6,7 @@ async function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
     rawFile.overrideMimeType("application/json");
     rawFile.open("GET", file, true);
-    rawFile.onreadystatechange = function() {
+    rawFile.onreadystatechange = function () {
         if (rawFile.readyState === 4 && rawFile.status == "200") {
             callback(rawFile.responseText);
         }
@@ -23,17 +23,17 @@ function numberWithCommas(x) {
 }
 
 
-readTextFile("./lobbies.json", async function(json) {
+readTextFile("./lobbies.json", async function (json) {
     var data = JSON.parse(json);
     // let lobbies = await lobbiesCreated()
 
-    let lobbies = await iteration("0x9eed3460ce72254f9f0ad5164c12f39e5e10a40c")
-    console.log(lobbies)
+    let lobbies = await lobbiesCreated()
+
     for (var i = 0; i < lobbies.length; i++) {
         data.push(lobbies[i])
     }
 
-    data.sort(function(a, b) {
+    data.sort(function (a, b) {
         return a.blocknumber - b.blocknumber;
     });
 
